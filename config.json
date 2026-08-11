@@ -1,0 +1,27 @@
+{
+    "token": "1234",
+    "tokens": [
+        "토큰",
+        "토큰",
+        "토큰",
+        "토큰",
+        "토큰",
+        "1234"
+    ],
+    "theme": "사이버펑크 (Cyberpunk)",
+    "macros": {
+        "auto_reply": {
+            "active": false,
+            "text": ""
+        },
+        "promo": {
+            "active": false,
+            "interval": 10,
+            "text": ""
+        },
+        "mimic": {
+            "active": false,
+            "target_id": ""
+        }
+    }
+}
