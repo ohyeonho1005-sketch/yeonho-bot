@@ -1,5 +1,4 @@
-from keep_alive
-import keep_arive
+from keep_alive import keep_alive
 import sys
 import random
 import string
