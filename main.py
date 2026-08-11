@@ -2217,6 +2217,7 @@ if __name__ == "__main__":
     
     import sys
     import os
+    import discord # 필수 인텐트 권한 설정을 위해 라이브러리 로드
     
     # 1. 생명줄 웹 서버 실행
     keep_alive()
@@ -2227,22 +2228,22 @@ if __name__ == "__main__":
     # 3. 시스템을 속여서 터미널에 주소와 토큰을 치고 들어온 것처럼 가짜 인자를 주입합니다.
     sys.argv = ["main.py", "--headless", _token, "!"]
     
-    # 4. 이제 원래 2227줄에 있던 순정 조건문이 에러 없이 완벽하게 실행됩니다.
-    if len(sys.argv) > 1 and sys.argv[1] == '--headless':
-        if len(sys.argv) < 3:
-            print("[headless] 오류: 토큰이 없습니다.")
-            sys.exit(1)
-
+    # 4. 최신 라이브러리가 요구하는 모든 인텐트 권한을 생성합니다.
+    intents = discord.Intents.all()
+    
+    if len(sys.argv) > 1: # 조건문을 확실하게 통과시킵니다.
         _token = sys.argv[2]
         _prefix = sys.argv[3] if len(sys.argv) > 3 else "!"
 
         def _headless_log(msg):
             print(msg, flush=True)
 
-        _config = {"prefix": _prefix, "token": _token}
+        # 원본 구조 딕셔너리에 최신 필수 필수값인 'intents'를 강제로 추가합니다.
+        _config = {"prefix": _prefix, "token": _token, "intents": intents}
 
         print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})")
         try:
+            # 꼬인 순서 없이 원본 그대로 대입하여 구동시킵니다.
             _client = SelfBot(_headless_log, _config)
             _client.run(_token)
         except Exception as e:
