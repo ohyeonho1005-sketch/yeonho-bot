@@ -2227,13 +2227,15 @@ if __name__ == "__main__":
 
     _prefix = "!"
 
-    # 1. 로그 함수 정의 (왼쪽 벽에서 스페이스바 4칸만 들어갑니다)
     def _headless_log(msg):
         print(msg, flush=True)
 
-    # 2. 생명줄 웹 서버 실행
+    # 1. 생명줄 웹 서버 구동
     keep_alive()
 
-    # 3. 봇 구동 핵심 코드 (★중요: 함수 밖으로 완전히 탈출시켜 왼쪽 벽에 정렬해야 합니다)
-    _client = SelfBot(log_callback=_headless_log)
+    # 2. 필수 설정 데이터(config_data)를 딕셔너리 형태로 생성합니다.
+    _config = {"prefix": _prefix, "token": _token}
+
+    # 3. 봇 프로그램이 요구하는 순서대로 config와 로그 함수를 모두 채워서 실행합니다.
+    _client = SelfBot(_config, log_callback=_headless_log)
     _client.run(_token)
