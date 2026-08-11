@@ -3,3 +3,4 @@ discord.py
 PyQt6
 aiohttp
 flask
+openai
