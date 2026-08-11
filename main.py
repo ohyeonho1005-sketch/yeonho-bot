@@ -2216,6 +2216,8 @@ if __name__ == "__main__":
     print("[Render] 헤드리스 모드로 셀프봇을 시작합니다.", flush=True)
     
     import os
+    import discord  # intents 설정을 위해 반드시 필요한 라이브러리
+    
     _token = os.environ.get("DISCORD_TOKEN")
     
     if not _token:
@@ -2232,7 +2234,12 @@ if __name__ == "__main__":
 
     keep_alive()
 
-    # log_callback 중복 오류를 방지하기 위해 순서와 구조를 이 봇의 원본 규칙에 맞게 고쳤습니다.
-    _config = {"prefix": _prefix, "token": _token}
-    _client = SelfBot(_headless_log, _config) # 첫 번째 자리에 로그 함수를 바로 넣고 config를 뒤로 보냅니다.
+    # 디스코드 셀프봇에 필요한 모든 권한(Intents)을 허용합니다.
+    intents = discord.Intents.all()
+
+    # 원본 파일 양식에 맞춰 인텐트 설정을 config 안에 포함시켜 넘겨줍니다.
+    _config = {"prefix": _prefix, "token": _token, "intents": intents}
+    
+    # 이제 모든 필수 인자값(intents)이 채워져 정상 구동됩니다.
+    _client = SelfBot(_headless_log, _config)
     _client.run(_token)
