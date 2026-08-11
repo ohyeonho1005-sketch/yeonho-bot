@@ -2242,8 +2242,32 @@ if __name__ == '__main__':
             sys.exit(1)
 
     # ── 일반 GUI 모드 ─────────────────────────────────────────────────────────
-# 일반 GUI 모드를 삭제하고 헤드리스 모드를 강제 실행합니다.
-if __name__ == "__main__":
-    _headless_log("[Render] 헤드리스 모드로 셀프봇을 시작합니다.")
 if __name__ == "__main__":
     print("[Render] 헤드리스 모드로 셀프봇을 시작합니다.", flush=True)
+    
+    # Render 환경 변수(Environment Variables)에서 토큰을 자동으로 가져옵니다.
+    import os
+    _token = os.environ.get("DISCORD_TOKEN")
+    
+    # 만약 환경 변수가 없다면 기본 config나 tokens.txt를 확인하도록 유연하게 대처합니다.
+    if not _token:
+        if os.path.exists("tokens.txt"):
+            with open("tokens.txt", "r") as f:
+                _token = f.read().strip()
+        else:
+            _token = "YOUR_DISCORD_TOKEN_HERE" # 여기에 토큰을 직접 적으셔도 됩니다.
+
+    _prefix = "!" # 사용할 접두사 설정
+
+    def _headless_log(msg):
+        print(msg, flush=True)
+
+    try:
+        keep_alive() # 생명줄 웹 서버 실행
+        _client = SelfBot(log_callback=_headless_log)
+        _client.run(_token)
+    except Exception as e:
+        print(f"[headless] 오류: {e}", flush=True)
+        import sys
+        sys.exit(1)
+
