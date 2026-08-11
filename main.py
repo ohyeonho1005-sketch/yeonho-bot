@@ -2242,8 +2242,6 @@ if __name__ == '__main__':
             sys.exit(1)
 
     # ── 일반 GUI 모드 ─────────────────────────────────────────────────────────
-            else:
-                 keep_alive()
-                 window = VoltSelfBotPanel()
-                 import asyncio
-                 asyncio.run(window.run_bot())
+# 일반 GUI 모드를 삭제하고 헤드리스 모드를 강제 실행합니다.
+if __name__ == "__main__":
+    _headless_log("[Render] 헤드리스 모드로 셀프봇을 시작합니다.")
