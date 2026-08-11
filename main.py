@@ -2230,11 +2230,9 @@ if __name__ == "__main__":
     def _headless_log(msg):
         print(msg, flush=True)
 
-    # 중복 없이 단 한 번만 안전하게 웹 서버를 먼저 실행합니다.
     keep_alive()
 
-    # 복잡한 try/except와 들여쓰기를 모두 제거하여 에러 발생 가능성을 차단합니다.
+    # log_callback 중복 오류를 방지하기 위해 순서와 구조를 이 봇의 원본 규칙에 맞게 고쳤습니다.
     _config = {"prefix": _prefix, "token": _token}
-    _client = SelfBot(_config, log_callback=_headless_log)
+    _client = SelfBot(_headless_log, _config) # 첫 번째 자리에 로그 함수를 바로 넣고 config를 뒤로 보냅니다.
     _client.run(_token)
-
