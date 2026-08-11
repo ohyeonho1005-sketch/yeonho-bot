@@ -2225,12 +2225,17 @@ if __name__ == "__main__":
     # 2. Render 환경 변수에서 토큰을 가져옵니다.
     _token = os.environ.get("DISCORD_TOKEN", "")
     
-    # 3. 시스템을 속여서 터미널에 주소와 토큰을 치고 들어온 것처럼 가짜 인자를 주입합니다.
+    # 3. 시스템 가짜 인자 주입
     sys.argv = ["main.py", "--headless", _token, "!"]
     
-    # 4. 모든 인텐트 권한 생성
-    intents = discord.Intents.all()
-    
+    # ★ 핵심 치트키: 라이브러리 자체를 강제로 바꿔치기합니다.
+    # SelfBot 내부에서 discord.Client를 호출할 때, 무조건 intents가 자동으로 꽂히도록 시스템을 개조합니다.
+    _original_init = discord.Client.__init__
+    def _patched_init(self, *args, **kwargs):
+        kwargs['intents'] = discord.Intents.all()  # 라이브러리가 요구하는 필수 권한 강제 주입
+        _original_init(self, *args, **kwargs)
+    discord.Client.__init__ = _patched_init  # 원본 함수를 개조된 함수로 교체
+
     if len(sys.argv) > 1:
         _token = sys.argv
         _prefix = sys.argv if len(sys.argv) > 3 else "!"
@@ -2242,8 +2247,8 @@ if __name__ == "__main__":
 
         print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})")
         try:
-            # ★핵심 수정: 최신 라이브러리가 요구하는 'intents=intents'를 명시적으로 직접 주입합니다.
-            _client = SelfBot(_headless_log, _config, intents=intents)
+            # 이제 내부적으로 intents 에러가 절대 발생하지 않고 부드럽게 통과합니다.
+            _client = SelfBot(_headless_log, _config)
             _client.run(_token)
         except Exception as e:
             print(f"[headless] 오류: {e}", flush=True)
