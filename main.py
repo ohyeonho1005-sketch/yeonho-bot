@@ -2217,7 +2217,7 @@ if __name__ == "__main__":
     
     import sys
     import os
-    import discord # 필수 인텐트 권한 설정을 위해 라이브러리 로드
+    import discord
     
     # 1. 생명줄 웹 서버 실행
     keep_alive()
@@ -2228,23 +2228,22 @@ if __name__ == "__main__":
     # 3. 시스템을 속여서 터미널에 주소와 토큰을 치고 들어온 것처럼 가짜 인자를 주입합니다.
     sys.argv = ["main.py", "--headless", _token, "!"]
     
-    # 4. 최신 라이브러리가 요구하는 모든 인텐트 권한을 생성합니다.
+    # 4. 모든 인텐트 권한 생성
     intents = discord.Intents.all()
     
-    if len(sys.argv) > 1: # 조건문을 확실하게 통과시킵니다.
-        _token = sys.argv[2]
-        _prefix = sys.argv[3] if len(sys.argv) > 3 else "!"
+    if len(sys.argv) > 1:
+        _token = sys.argv
+        _prefix = sys.argv if len(sys.argv) > 3 else "!"
 
         def _headless_log(msg):
             print(msg, flush=True)
 
-        # 원본 구조 딕셔너리에 최신 필수 필수값인 'intents'를 강제로 추가합니다.
-        _config = {"prefix": _prefix, "token": _token, "intents": intents}
+        _config = {"prefix": _prefix, "token": _token}
 
         print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})")
         try:
-            # 꼬인 순서 없이 원본 그대로 대입하여 구동시킵니다.
-            _client = SelfBot(_headless_log, _config)
+            # ★핵심 수정: 최신 라이브러리가 요구하는 'intents=intents'를 명시적으로 직접 주입합니다.
+            _client = SelfBot(_headless_log, _config, intents=intents)
             _client.run(_token)
         except Exception as e:
             print(f"[headless] 오류: {e}", flush=True)
