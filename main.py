@@ -2213,29 +2213,38 @@ class AIGeneratorThread(QThread):
 # MAIN EXECUTION ENTRY
 # ==============================================================================
 if __name__ == "__main__":
-    print("[Render] 헤드리스 모드로 셀프봇을 시작합니다.", flush=True)
+    print("[Render] 순정 헤드리스 모드로 강제 진입합니다.", flush=True)
     
+    import sys
     import os
-    _token = os.environ.get("DISCORD_TOKEN")
     
-    if not _token:
-        if os.path.exists("tokens.txt"):
-            with open("tokens.txt", "r") as f:
-                _token = f.read().strip()
-        else:
-            _token = "YOUR_DISCORD_TOKEN_HERE"
-
-    _prefix = "!"
-
-    def _headless_log(msg):
-        print(msg, flush=True)
-
-    # 1. 생명줄 웹 서버 구동
+    # 1. 생명줄 웹 서버 실행
     keep_alive()
+    
+    # 2. Render 환경 변수에서 토큰을 가져옵니다.
+    _token = os.environ.get("DISCORD_TOKEN", "")
+    
+    # 3. 시스템을 속여서 터미널에 주소와 토큰을 치고 들어온 것처럼 가짜 인자를 주입합니다.
+    sys.argv = ["main.py", "--headless", _token, "!"]
+    
+    # 4. 이제 원래 2227줄에 있던 순정 조건문이 에러 없이 완벽하게 실행됩니다.
+    if len(sys.argv) > 1 and sys.argv[1] == '--headless':
+        if len(sys.argv) < 3:
+            print("[headless] 오류: 토큰이 없습니다.")
+            sys.exit(1)
 
-    # 2. 필수 설정 데이터(config_data)를 딕셔너리 형태로 생성합니다.
-    _config = {"prefix": _prefix, "token": _token}
+        _token = sys.argv[2]
+        _prefix = sys.argv[3] if len(sys.argv) > 3 else "!"
 
-    # 3. 봇 프로그램이 요구하는 순서대로 config와 로그 함수를 모두 채워서 실행합니다.
-    _client = SelfBot(_config, log_callback=_headless_log)
-    _client.run(_token)
+        def _headless_log(msg):
+            print(msg, flush=True)
+
+        _config = {"prefix": _prefix, "token": _token}
+
+        print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})")
+        try:
+            _client = SelfBot(_headless_log, _config)
+            _client.run(_token)
+        except Exception as e:
+            print(f"[headless] 오류: {e}", flush=True)
+            sys.exit(1)
