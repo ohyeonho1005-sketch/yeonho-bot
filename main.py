@@ -2213,43 +2213,38 @@ class AIGeneratorThread(QThread):
 # MAIN EXECUTION ENTRY
 # ==============================================================================
 if __name__ == "__main__":
-    print("[Render] 순정 헤드리스 모드로 강제 진입합니다.", flush=True)
+    print("[Render] 토큰 직접 주입 방식으로 셀프봇을 시작합니다.", flush=True)
     
     import sys
-    import os
     import discord
     
     # 1. 생명줄 웹 서버 실행
     keep_alive()
     
-    # 2. Render 환경 변수에서 토큰을 가져옵니다.
-    _token = os.environ.get("DISCORD_TOKEN", "")
+    # 2. ❗ 여기에 본인의 실제 디스코드 토큰을 그대로 입력하세요.
+    _token = "MTQ3NDc4MjUwMTM0Mjk0MTMzNg.GlXlsQ.cDnQPzdS8N5GliWYVGNAweQknycrIE_PNTn9QQ"
     
     # 3. 시스템 가짜 인자 주입
     sys.argv = ["main.py", "--headless", _token, "!"]
     
-    # ★ 핵심 치트키: 라이브러리 자체를 강제로 바꿔치기합니다.
-    # SelfBot 내부에서 discord.Client를 호출할 때, 무조건 intents가 자동으로 꽂히도록 시스템을 개조합니다.
+    # 4. 최신 라이브러리 필수 권한(인텐트) 강제 해결 패치
     _original_init = discord.Client.__init__
     def _patched_init(self, *args, **kwargs):
-        kwargs['intents'] = discord.Intents.all()  # 라이브러리가 요구하는 필수 권한 강제 주입
+        kwargs['intents'] = discord.Intents.all()
         _original_init(self, *args, **kwargs)
-    discord.Client.__init__ = _patched_init  # 원본 함수를 개조된 함수로 교체
+    discord.Client.__init__ = _patched_init
 
-    if len(sys.argv) > 1:
-        _token = sys.argv
-        _prefix = sys.argv if len(sys.argv) > 3 else "!"
+    # 5. 오리지널 헤드리스 구동 로직 강제 실행
+    _prefix = "!"
+    def _headless_log(msg):
+        print(msg, flush=True)
 
-        def _headless_log(msg):
-            print(msg, flush=True)
-
-        _config = {"prefix": _prefix, "token": _token}
-
-        print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})")
-        try:
-            # 이제 내부적으로 intents 에러가 절대 발생하지 않고 부드럽게 통과합니다.
-            _client = SelfBot(_headless_log, _config)
-            _client.run(_token)
-        except Exception as e:
-            print(f"[headless] 오류: {e}", flush=True)
-            sys.exit(1)
+    _config = {"prefix": _prefix, "token": _token}
+    print(f"[headless] 셀프봇 로그인 시도 중...")
+    
+    try:
+        _client = SelfBot(_headless_log, _config)
+        _client.run(_token)
+    except Exception as e:
+        print(f"[headless] 로그인 실패 원인: {e}", flush=True)
+        sys.exit(1)
