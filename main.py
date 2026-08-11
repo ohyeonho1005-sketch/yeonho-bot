@@ -2245,3 +2245,5 @@ if __name__ == '__main__':
 # 일반 GUI 모드를 삭제하고 헤드리스 모드를 강제 실행합니다.
 if __name__ == "__main__":
     _headless_log("[Render] 헤드리스 모드로 셀프봇을 시작합니다.")
+if __name__ == "__main__":
+    print("[Render] 헤드리스 모드로 셀프봇을 시작합니다.", flush=True)
