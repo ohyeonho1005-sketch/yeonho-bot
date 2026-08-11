@@ -2212,61 +2212,29 @@ class AIGeneratorThread(QThread):
 # ==============================================================================
 # MAIN EXECUTION ENTRY
 # ==============================================================================
-if __name__ == '__main__':
-    freeze_support = getattr(sys, 'freeze_support', None)
-    if freeze_support:
-        freeze_support()
-
-    # ── 헤드리스 모드 (bot.py subprocess 호출용) ──────────────────────────────
-    # 사용법: python main.py --headless <token> [prefix]
-    if len(sys.argv) > 1 and sys.argv[1] == '--headless':
-        if len(sys.argv) < 3:
-            print("[headless] 오류: 토큰이 없습니다.")
-            sys.exit(1)
-
-        _token  = sys.argv[2]
-        _prefix = sys.argv[3] if len(sys.argv) > 3 else "!"
-
-        def _headless_log(msg):
-            print(msg, flush=True)
-
-        _config = {"prefix": _prefix, "token": _token}
-
-        print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})", flush=True)
-        try:
-            _client = SelfBot(log_callback=_headless_log, config_data=_config)
-            keep_alive()
-            _client.run(_token)
-        except Exception as e:
-            print(f"[headless] 오류: {e}", flush=True)
-            sys.exit(1)
-
-    # ── 일반 GUI 모드 ─────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("[Render] 헤드리스 모드로 셀프봇을 시작합니다.", flush=True)
     
-    # Render 환경 변수(Environment Variables)에서 토큰을 자동으로 가져옵니다.
     import os
     _token = os.environ.get("DISCORD_TOKEN")
     
-    # 만약 환경 변수가 없다면 기본 config나 tokens.txt를 확인하도록 유연하게 대처합니다.
     if not _token:
         if os.path.exists("tokens.txt"):
             with open("tokens.txt", "r") as f:
                 _token = f.read().strip()
         else:
-            _token = "YOUR_DISCORD_TOKEN_HERE" # 여기에 토큰을 직접 적으셔도 됩니다.
+            _token = "YOUR_DISCORD_TOKEN_HERE"
 
-    _prefix = "!" # 사용할 접두사 설정
+    _prefix = "!"
 
     def _headless_log(msg):
         print(msg, flush=True)
 
-    try:
-        keep_alive() # 생명줄 웹 서버 실행
-        
-        # 설정값(_config)을 누락 없이 함께 넘겨주도록 수정합니다.
-        _client = SelfBot(_config, log_callback=_headless_log) 
-        _client.run(_token)
-    except Exception as e:
-    
+    # 중복 없이 단 한 번만 안전하게 웹 서버를 먼저 실행합니다.
+    keep_alive()
+
+    # 복잡한 try/except와 들여쓰기를 모두 제거하여 에러 발생 가능성을 차단합니다.
+    _config = {"prefix": _prefix, "token": _token}
+    _client = SelfBot(_config, log_callback=_headless_log)
+    _client.run(_token)
+
