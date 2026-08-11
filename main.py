@@ -2236,6 +2236,7 @@ if __name__ == '__main__':
         print(f"[headless] 셀프봇 시작 중... (prefix={_prefix})", flush=True)
         try:
             _client = SelfBot(log_callback=_headless_log, config_data=_config)
+            keep_alive()
             _client.run(_token)
         except Exception as e:
             print(f"[headless] 오류: {e}", flush=True)
