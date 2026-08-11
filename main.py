@@ -2264,10 +2264,9 @@ if __name__ == "__main__":
 
     try:
         keep_alive() # 생명줄 웹 서버 실행
-        _client = SelfBot(log_callback=_headless_log)
+        
+        # 설정값(_config)을 누락 없이 함께 넘겨주도록 수정합니다.
+        _client = SelfBot(_config, log_callback=_headless_log) 
         _client.run(_token)
     except Exception as e:
-        print(f"[headless] 오류: {e}", flush=True)
-        import sys
-        sys.exit(1)
-
+    
