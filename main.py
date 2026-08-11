@@ -2242,8 +2242,10 @@ if __name__ == '__main__':
             sys.exit(1)
 
     # ── 일반 GUI 모드 ─────────────────────────────────────────────────────────
-    else:
-        app = QApplication(sys.argv)
-        window = VoltSelfBotPanel()
-        window.show()
-        sys.exit(app.exec())
+        else:
+        # Render 클라우드 무한 유지를 위한 웹 서버 구동
+        keep_alive()
+        
+        # PyQt6 화면 창을 띄우지 않고, 디스코드 백엔드 봇 기능만 비동기로 실행
+        import asyncio
+        asyncio.run(window.run_bot()) 
